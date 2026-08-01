@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Raza Graphic Solutions — Graphic Designer & Video Editor | Pakistan</title>
-<meta name="google-site-verification" content="iLUd3dho6h7UGcmwHorjZ7WCSvBIoeB4bxbApaHHQHg" />
 <meta name="description" content="Raza Graphic Solutions is a premium graphic design and video editing studio based in Pakistan, helping brands, agencies and startups worldwide build a striking visual identity.">
 <meta name="keywords" content="Raza Graphic Solutions, graphic designer Pakistan, brand identity designer, video editor, logo design, social media design, YouTube thumbnails">
 <meta name="author" content="Muhammad Bilal Sarwar">
@@ -74,7 +73,7 @@
       <circle cx="60" cy="60" r="52" class="loader__ring-track"/>
       <circle cx="60" cy="60" r="52" class="loader__ring-fill"/>
     </svg>
-    <span class="loader__initials">RGS</span>
+    <span class="loader__initials" id="loaderInitials">RGS</span>
   </div>
   <p class="loader__label">Crafting the experience</p>
 </div>
@@ -86,7 +85,7 @@
 <header class="nav" id="siteNav">
   <div class="nav__inner">
     <a href="#home" class="nav__logo" aria-label="Raza Graphic Solutions — home">
-      <span class="nav__logo-mark">RGS</span>
+      <span class="nav__logo-mark" id="navLogoMark">RGS</span>
       <span class="nav__logo-full">Raza&nbsp;Graphic&nbsp;Solutions</span>
     </a>
 
@@ -102,6 +101,10 @@
       <a href="#contact" class="nav__link nav__link--cta" data-nav>Contact</a>
     </nav>
 
+    <button class="theme-toggle" id="themeToggle" aria-label="Switch to light mode">
+      <svg class="theme-toggle__sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>
+      <svg class="theme-toggle__moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/></svg>
+    </button>
     <button class="nav__toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
       <span></span><span></span><span></span>
     </button>
@@ -193,12 +196,8 @@
             <span class="about__stat-label">Happy Clients</span>
           </div>
           <div class="about__stat">
-            <span class="about__stat-value"><span class="about__stat-num" data-count="5">0</span></span>
+            <span class="about__stat-value"><span class="about__stat-num" data-count="10">0</span><span class="about__stat-plus">+</span></span>
             <span class="about__stat-label">Years Experience</span>
-          </div>
-          <div class="about__stat">
-            <span class="about__stat-value"><span class="about__stat-num" data-count="12">0</span></span>
-            <span class="about__stat-label">Countries Served</span>
           </div>
         </div>
       </div>
@@ -269,14 +268,8 @@
       <h2 class="section-title center reveal" data-reveal>Portfolio</h2>
       <p class="section-sub center reveal" data-reveal>A cross-section of recent branding, design and video work.</p>
 
-      <div class="portfolio__filters reveal" data-reveal role="tablist" aria-label="Portfolio categories">
+      <div class="portfolio__filters reveal" data-reveal role="tablist" aria-label="Portfolio categories" id="portfolioFilters">
         <button class="filter-btn is-active" data-filter="all" role="tab" aria-selected="true">All</button>
-        <button class="filter-btn" data-filter="graphic" role="tab" aria-selected="false">Graphic Design</button>
-        <button class="filter-btn" data-filter="branding" role="tab" aria-selected="false">Branding</button>
-        <button class="filter-btn" data-filter="posters" role="tab" aria-selected="false">Posters</button>
-        <button class="filter-btn" data-filter="logos" role="tab" aria-selected="false">Logos</button>
-        <button class="filter-btn" data-filter="social" role="tab" aria-selected="false">Social Media</button>
-        <button class="filter-btn" data-filter="video" role="tab" aria-selected="false">Video Projects</button>
       </div>
 
       <!-- Replace placeholder tiles with real <img src="assets/images/work-XX.jpg" loading="lazy"> once assets are supplied -->
@@ -295,6 +288,7 @@
         <h3 class="lightbox__title" id="lightboxTitle"></h3>
         <p class="lightbox__desc" id="lightboxDesc"></p>
         <dl class="lightbox__facts" id="lightboxFacts"></dl>
+        <div class="lightbox__thumbs" id="lightboxThumbs"></div>
       </div>
     </div>
     <button class="lightbox__nav lightbox__nav--next" id="lightboxNext" aria-label="Next project">&#8250;</button>
@@ -314,10 +308,6 @@
       <div class="skills__bars reveal" data-reveal>
         <div class="skill-bar" data-percent="95">
           <div class="skill-bar__head"><span>Adobe Photoshop</span><span class="skill-bar__pct">95%</span></div>
-          <div class="skill-bar__track"><div class="skill-bar__fill"></div></div>
-        </div>
-        <div class="skill-bar" data-percent="88">
-          <div class="skill-bar__head"><span>Adobe Illustrator</span><span class="skill-bar__pct">88%</span></div>
           <div class="skill-bar__track"><div class="skill-bar__fill"></div></div>
         </div>
         <div class="skill-bar" data-percent="92">
@@ -588,6 +578,26 @@
 <button class="back-to-top" id="backToTop" aria-label="Back to top">
   <svg viewBox="0 0 24 24"><path d="M12 5l-7 7M12 5l7 7M12 5v14"/></svg>
 </button>
+
+<!-- ============ MASCOT ASSISTANT ============ -->
+<div class="mascot" id="mascotWidget">
+  <div class="mascot__bubble" id="mascotBubble" role="status">
+    <p id="mascotBubbleText">Welcome to Raza Graphic Solutions! Tap me if you have a question 👋</p>
+  </div>
+
+  <button type="button" class="mascot__avatar" id="mascotAvatar" aria-label="Open assistant" aria-expanded="false">
+    <img src="assets/images/mascot.webp" alt="" loading="lazy">
+    <span class="mascot__dot" aria-hidden="true"></span>
+  </button>
+
+  <div class="mascot__panel" id="mascotPanel" aria-hidden="true">
+    <div class="mascot__panel-head">
+      <span>Ask me anything</span>
+      <button type="button" class="mascot__panel-close" id="mascotPanelClose" aria-label="Close assistant">&times;</button>
+    </div>
+    <div class="mascot__panel-body" id="mascotPanelBody"></div>
+  </div>
+</div>
 
 <script src="script.js" defer></script>
 <!-- Netlify Identity: handles invite/confirmation links that land here before redirecting to /admin -->

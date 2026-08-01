@@ -2,6 +2,30 @@
   'use strict';
 
   /* ==========================================================
+     THEME (light/dark) — applied first to avoid a flash of
+     the wrong theme on load. Preference saved in localStorage.
+     ========================================================== */
+  const THEME_KEY = 'rgs-theme';
+  function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    const btn = document.getElementById('themeToggle');
+    if (btn) btn.setAttribute('aria-label', theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode');
+  }
+  const savedTheme = localStorage.getItem(THEME_KEY);
+  applyTheme(savedTheme || 'dark');
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const themeToggle = document.getElementById('themeToggle');
+    if (themeToggle) {
+      themeToggle.addEventListener('click', () => {
+        const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+        applyTheme(next);
+        localStorage.setItem(THEME_KEY, next);
+      });
+    }
+  });
+
+  /* ==========================================================
      LOADER
      ========================================================== */
   let loaderHidden = false;
@@ -233,7 +257,7 @@
   skillBars.forEach(bar => skillObserver.observe(bar));
 
   /* ==========================================================
-     SITE SETTINGS (founder photo) — managed via /admin CMS
+     SITE SETTINGS (founder photo + logo) — managed via /admin CMS
      ========================================================== */
   fetch('content/settings.json', { cache: 'no-store' })
     .then(res => (res.ok ? res.json() : Promise.reject()))
@@ -241,6 +265,12 @@
       const frame = document.getElementById('aboutFrameInner');
       if (frame && data.founder_photo) {
         frame.innerHTML = `<img src="${data.founder_photo}" alt="Muhammad Bilal Sarwar, founder of Raza Graphic Solutions" loading="lazy">`;
+      }
+      if (data.logo) {
+        const navMark = document.getElementById('navLogoMark');
+        const loaderInitials = document.getElementById('loaderInitials');
+        if (navMark) navMark.innerHTML = `<img src="${data.logo}" alt="Raza Graphic Solutions logo">`;
+        if (loaderInitials) loaderInitials.outerHTML = `<img src="${data.logo}" alt="Raza Graphic Solutions logo">`;
       }
     })
     .catch(() => { /* keep initials placeholder */ });
@@ -250,37 +280,51 @@
      Content lives in /content/portfolio.json, editable via the
      admin CMS at /admin. Falls back to sensible defaults if the
      file can't be fetched (e.g. an offline preview).
+
+     Categories are free text (typed in the CMS) — the filter
+     buttons above the grid are generated automatically from
+     whatever categories exist in the data, so a brand-new
+     category typed in the CMS gets its own working filter
+     button with no code changes needed.
      ========================================================== */
   const defaultPortfolioItems = [
-    { title: 'Lumen Skincare — Brand Identity', category: 'branding', label: 'Branding', image: '',
+    { title: 'Lumen Skincare — Brand Identity', category: 'Branding', image: '', gallery: [],
       desc: 'A full identity system for a skincare brand entering a crowded market — logo, packaging language and a colour system built to feel calm and premium.',
       client: 'Lumen Skincare', role: 'Brand Identity', year: '2025' },
-    { title: 'Orchid Retail — Sale Poster', category: 'posters', label: 'Posters', image: '',
+    { title: 'Orchid Retail — Sale Poster', category: 'Posters', image: '', gallery: [],
       desc: 'A bold seasonal sale poster designed to work across in-store print and social, built around a single strong focal point.',
       client: 'Orchid Retail', role: 'Poster Design', year: '2025' },
-    { title: 'Northline Coffee — Logo Mark', category: 'logos', label: 'Logos', image: '',
+    { title: 'Northline Coffee — Logo Mark', category: 'Logos', image: '', gallery: [],
       desc: 'A minimal wordmark and icon for an independent coffee roaster, designed to work as small as a cup sleeve and as large as signage.',
       client: 'Northline Coffee', role: 'Logo Design', year: '2024' },
   ];
 
   let portfolioItems = defaultPortfolioItems;
   const grid = document.getElementById('portfolioGrid');
+  const filtersEl = document.getElementById('portfolioFilters');
 
   function renderPortfolio() {
     grid.innerHTML = portfolioItems.map((item, i) => `
-      <button type="button" class="portfolio-item" data-category="${item.category}" data-index="${i}" aria-label="View ${item.title}">
+      <button type="button" class="portfolio-item" data-category="${(item.category || '').toLowerCase()}" data-index="${i}" aria-label="View ${item.title}">
         ${item.image
           ? `<img class="portfolio-item__img" src="${item.image}" alt="${item.title}" loading="lazy">`
           : `<span class="portfolio-item__visual" aria-hidden="true">RGS</span>`}
         <span class="portfolio-item__overlay">
-          <span class="portfolio-item__cat">${item.label}</span>
+          <span class="portfolio-item__cat">${item.category || ''}</span>
           <span class="portfolio-item__title">${item.title}</span>
         </span>
       </button>
     `).join('');
   }
 
+  function renderFilters() {
+    const categories = [...new Set(portfolioItems.map(i => i.category).filter(Boolean))];
+    filtersEl.innerHTML = `<button class="filter-btn is-active" data-filter="all" role="tab" aria-selected="true">All</button>` +
+      categories.map(cat => `<button class="filter-btn" data-filter="${cat.toLowerCase()}" role="tab" aria-selected="false">${cat}</button>`).join('');
+  }
+
   renderPortfolio(); // paint immediately with fallback data, then swap in real content
+  renderFilters();
 
   fetch('content/portfolio.json', { cache: 'no-store' })
     .then(res => (res.ok ? res.json() : Promise.reject()))
@@ -288,27 +332,28 @@
       if (Array.isArray(data.items) && data.items.length) {
         portfolioItems = data.items;
         renderPortfolio();
+        renderFilters();
       }
     })
     .catch(() => { /* keep fallback data — fine for offline/preview contexts */ });
 
   /* ==========================================================
-     PORTFOLIO FILTER
+     PORTFOLIO FILTER (event-delegated — filter buttons are
+     generated dynamically, so listeners attach to the container)
      ========================================================== */
-  const filterBtns = document.querySelectorAll('.filter-btn');
   const items = () => Array.from(document.querySelectorAll('.portfolio-item'));
 
-  filterBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      filterBtns.forEach(b => { b.classList.remove('is-active'); b.setAttribute('aria-selected', 'false'); });
-      btn.classList.add('is-active');
-      btn.setAttribute('aria-selected', 'true');
+  filtersEl.addEventListener('click', (e) => {
+    const btn = e.target.closest('.filter-btn');
+    if (!btn) return;
+    filtersEl.querySelectorAll('.filter-btn').forEach(b => { b.classList.remove('is-active'); b.setAttribute('aria-selected', 'false'); });
+    btn.classList.add('is-active');
+    btn.setAttribute('aria-selected', 'true');
 
-      const filter = btn.dataset.filter;
-      items().forEach(item => {
-        const match = filter === 'all' || item.dataset.category.includes(filter);
-        item.classList.toggle('is-hidden', !match);
-      });
+    const filter = btn.dataset.filter;
+    items().forEach(item => {
+      const match = filter === 'all' || item.dataset.category === filter;
+      item.classList.toggle('is-hidden', !match);
     });
   });
 
@@ -329,17 +374,21 @@
 
   function visibleItems() { return items().filter(i => !i.classList.contains('is-hidden')); }
 
+  function setLightboxImage(src, alt) {
+    lightboxMedia.innerHTML = src ? `<img src="${src}" alt="${alt}" loading="lazy">` : 'RGS';
+  }
+
   function openLightbox(index) {
     const list = visibleItems();
     if (!list.length) return;
     currentIndex = index;
     const el = list[currentIndex];
     const data = portfolioItems[parseInt(el.dataset.index, 10)];
-    lightboxMedia.innerHTML = data.image
-      ? `<img src="${data.image}" alt="${data.title}" loading="lazy">`
-      : 'RGS';
+    const allImages = [data.image, ...(Array.isArray(data.gallery) ? data.gallery : [])].filter(Boolean);
+
+    setLightboxImage(allImages[0], data.title);
     lightboxTitle.textContent = data.title;
-    lightboxCategory.textContent = data.label;
+    lightboxCategory.textContent = data.category || '';
     lightboxDesc.textContent = data.desc || '';
     const facts = {};
     if (data.client) facts.Client = data.client;
@@ -347,12 +396,35 @@
     if (data.year) facts.Year = data.year;
     lightboxFacts.innerHTML = Object.entries(facts)
       .map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('');
+
+    // Thumbnail strip only appears when a project has more than one image
+    const thumbsEl = document.getElementById('lightboxThumbs');
+    if (allImages.length > 1) {
+      thumbsEl.innerHTML = allImages.map((src, i) => `
+        <button type="button" class="lightbox__thumb ${i === 0 ? 'is-active' : ''}" data-src="${src}" aria-label="View image ${i + 1}">
+          <img src="${src}" alt="" loading="lazy">
+        </button>
+      `).join('');
+      thumbsEl.style.display = 'flex';
+    } else {
+      thumbsEl.innerHTML = '';
+      thumbsEl.style.display = 'none';
+    }
+
     lightbox.classList.add('is-open');
     lightbox.setAttribute('aria-hidden', 'false');
     lastFocused = document.activeElement;
     lightboxClose.focus();
     document.body.style.overflow = 'hidden';
   }
+
+  document.getElementById('lightboxThumbs')?.addEventListener('click', (e) => {
+    const thumb = e.target.closest('.lightbox__thumb');
+    if (!thumb) return;
+    document.querySelectorAll('.lightbox__thumb').forEach(t => t.classList.remove('is-active'));
+    thumb.classList.add('is-active');
+    setLightboxImage(thumb.dataset.src, lightboxTitle.textContent);
+  });
 
   function closeLightbox() {
     lightbox.classList.remove('is-open');
@@ -397,6 +469,85 @@
       }
     }
   });
+
+  /* ==========================================================
+     MASCOT ASSISTANT
+     ========================================================== */
+  const mascotQA = [
+    { q: "What's your typical turnaround time?",
+      a: "Most single deliverables (a logo, a poster, a thumbnail) take 2–4 days. Full brand identities or video projects typically take 1–3 weeks depending on scope." },
+    { q: "How many revisions are included?",
+      a: "Every project includes a set number of revision rounds agreed upfront in the scope, and we keep refining together until it truly fits your brand." },
+    { q: "Do you work with clients outside Pakistan?",
+      a: "Yes — the majority of recent clients are international. All communication, briefs and delivery happen remotely over WhatsApp, email or your preferred tool." },
+    { q: "What do you need from me to get started?",
+      a: "A short brief covering your goals, audience, brand references (if any) and deadline. We'll follow up with a couple of clarifying questions before starting work." },
+    { q: "How do payments work?",
+      a: "Typically a deposit upfront with the balance on delivery; for larger projects, split into milestones. Full details are confirmed in writing before work begins." },
+  ];
+
+  const mascotWidget = document.getElementById('mascotWidget');
+  const mascotBubble = document.getElementById('mascotBubble');
+  const mascotAvatar = document.getElementById('mascotAvatar');
+  const mascotPanel = document.getElementById('mascotPanel');
+  const mascotPanelBody = document.getElementById('mascotPanelBody');
+  const mascotPanelClose = document.getElementById('mascotPanelClose');
+
+  function renderMascotQuestions() {
+    mascotPanelBody.innerHTML =
+      mascotQA.map((item, i) => `<button type="button" class="mascot__q" data-qi="${i}">${item.q}</button>`).join('') +
+      `<a class="mascot__whatsapp" href="https://wa.me/923088739526" target="_blank" rel="noopener">Something else? Chat on WhatsApp</a>`;
+  }
+
+  function renderMascotAnswer(i) {
+    const item = mascotQA[i];
+    mascotPanelBody.innerHTML = `
+      <button type="button" class="mascot__back" id="mascotBack">&larr; Back to questions</button>
+      <p class="mascot__answer">${item.a}</p>
+      <a class="mascot__whatsapp" href="https://wa.me/923088739526" target="_blank" rel="noopener">Ask on WhatsApp instead</a>
+    `;
+    document.getElementById('mascotBack').addEventListener('click', renderMascotQuestions);
+  }
+
+  if (mascotWidget) {
+    renderMascotQuestions();
+
+    // Entrance: slide in shortly after the loader clears, then show the
+    // welcome bubble for a few seconds before it fades on its own.
+    setTimeout(() => {
+      mascotWidget.classList.add('is-visible');
+      setTimeout(() => mascotBubble.classList.add('is-shown'), 300);
+      setTimeout(() => mascotBubble.classList.remove('is-shown'), 5500);
+    }, 1600);
+
+    mascotAvatar.addEventListener('click', () => {
+      const open = mascotPanel.classList.toggle('is-open');
+      mascotPanel.setAttribute('aria-hidden', String(!open));
+      mascotAvatar.setAttribute('aria-expanded', String(open));
+      mascotBubble.classList.remove('is-shown');
+      if (open) renderMascotQuestions();
+    });
+
+    mascotPanelClose.addEventListener('click', () => {
+      mascotPanel.classList.remove('is-open');
+      mascotPanel.setAttribute('aria-hidden', 'true');
+      mascotAvatar.setAttribute('aria-expanded', 'false');
+    });
+
+    mascotPanelBody.addEventListener('click', (e) => {
+      const qBtn = e.target.closest('.mascot__q');
+      if (qBtn) renderMascotAnswer(parseInt(qBtn.dataset.qi, 10));
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!mascotPanel.classList.contains('is-open')) return;
+      if (!mascotWidget.contains(e.target)) {
+        mascotPanel.classList.remove('is-open');
+        mascotPanel.setAttribute('aria-hidden', 'true');
+        mascotAvatar.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
 
   /* ==========================================================
      FAQ ACCORDION
