@@ -1,0 +1,114 @@
+{
+  "items": [
+    {
+      "title": "Lumen Skincare — Brand Identity",
+      "category": "branding",
+      "label": "Branding",
+      "image": "",
+      "video_url": "",
+      "desc": "A full identity system for a skincare brand entering a crowded market — logo, packaging language and a colour system built to feel calm and premium.",
+      "client": "Lumen Skincare",
+      "role": "Brand Identity",
+      "year": "2025"
+    },
+    {
+      "title": "Orchid Retail — Sale Poster",
+      "category": "posters",
+      "label": "Posters",
+      "image": "",
+      "video_url": "",
+      "desc": "A bold seasonal sale poster designed to work across in-store print and social, built around a single strong focal point.",
+      "client": "Orchid Retail",
+      "role": "Poster Design",
+      "year": "2025"
+    },
+    {
+      "title": "Northline Coffee — Logo Mark",
+      "category": "logos",
+      "label": "Logos",
+      "image": "",
+      "video_url": "",
+      "desc": "A minimal wordmark and icon for an independent coffee roaster, designed to work as small as a cup sleeve and as large as signage.",
+      "client": "Northline Coffee",
+      "role": "Logo Design",
+      "year": "2024"
+    },
+    {
+      "title": "Fitness Weekly — Instagram Kit",
+      "category": "social",
+      "label": "Social Media",
+      "image": "",
+      "video_url": "",
+      "desc": "A modular Instagram template kit covering quotes, tips and promo posts, kept flexible for a small in-house team to reuse.",
+      "client": "Fitness Weekly",
+      "role": "Social Media Kit",
+      "year": "2025"
+    },
+    {
+      "title": "Wanderlust Vlog — Episode Cut",
+      "category": "video",
+      "label": "Video Projects",
+      "image": "",
+      "video_url": "",
+      "desc": "Full episode edit with colour grading, pacing and sound design for a travel vlog's season premiere.",
+      "client": "Wanderlust Vlog",
+      "role": "Video Editing",
+      "year": "2025"
+    },
+    {
+      "title": "Cedar & Co — Packaging Design",
+      "category": "graphic",
+      "label": "Graphic Design",
+      "image": "",
+      "video_url": "",
+      "desc": "Packaging artwork for a home goods line, translating the brand's identity onto boxes, labels and inserts.",
+      "client": "Cedar & Co",
+      "role": "Packaging",
+      "year": "2024"
+    },
+    {
+      "title": "Ember Studio — Rebrand",
+      "category": "branding",
+      "label": "Branding",
+      "image": "",
+      "video_url": "",
+      "desc": "A ground-up rebrand for a creative studio, including a new mark, type system and brand guidelines.",
+      "client": "Ember Studio",
+      "role": "Rebrand",
+      "year": "2025"
+    },
+    {
+      "title": "Summer Sale — Banner Set",
+      "category": "graphic",
+      "label": "Graphic Design",
+      "image": "",
+      "video_url": "",
+      "desc": "A coordinated set of web and social ad banners built to a single grid so every size stayed consistent.",
+      "client": "Confidential",
+      "role": "Banner Design",
+      "year": "2025"
+    },
+    {
+      "title": "Tech Weekly — YouTube Thumbnail",
+      "category": "graphic",
+      "label": "Graphic Design",
+      "image": "",
+      "video_url": "",
+      "desc": "A high-contrast thumbnail system designed to lift click-through rate while staying true to the channel's tone.",
+      "client": "Tech Weekly",
+      "role": "Thumbnail Design",
+      "year": "2025"
+    },
+    {
+      "title": "Highland Coffee — Wordmark",
+      "category": "logos",
+      "label": "Logos",
+      "image": "",
+      "video_url": "",
+      "desc": "A refined wordmark and secondary mark for a specialty coffee brand, paired with a simple usage guide.",
+      "client": "Highland Coffee",
+      "role": "Logo Design",
+      "year": "2024"
+    }
+  ]
+}

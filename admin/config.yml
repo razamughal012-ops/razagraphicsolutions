@@ -1,0 +1,66 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "assets/images/uploads"
+public_folder: "/assets/images/uploads"
+
+locale: "en"
+
+collections:
+  - name: "portfolio"
+    label: "Portfolio"
+    description: "Add, edit, or remove the projects shown in the Portfolio section."
+    files:
+      - file: "content/portfolio.json"
+        label: "Portfolio Projects"
+        name: "portfolio"
+        fields:
+          - label: "Projects"
+            name: "items"
+            widget: "list"
+            summary: "{{title}} — {{label}}"
+            fields:
+              - { label: "Title", name: "title", widget: "string", hint: "e.g. Lumen Skincare — Brand Identity" }
+              - label: "Category"
+                name: "category"
+                widget: "select"
+                hint: "Controls which filter button shows this project"
+                options:
+                  - { label: "Graphic Design", value: "graphic" }
+                  - { label: "Branding", value: "branding" }
+                  - { label: "Posters", value: "posters" }
+                  - { label: "Logos", value: "logos" }
+                  - { label: "Social Media", value: "social" }
+                  - { label: "Video Projects", value: "video" }
+              - label: "Category Label (shown on the card)"
+                name: "label"
+                widget: "string"
+              - label: "Image"
+                name: "image"
+                widget: "image"
+                required: false
+                hint: "Recommended: 1200x1500px (4:5 ratio) JPG or PNG"
+              - label: "Video URL (optional)"
+                name: "video_url"
+                widget: "string"
+                required: false
+                hint: "YouTube or Vimeo link — only used for video projects"
+              - { label: "Description", name: "desc", widget: "text" }
+              - { label: "Client", name: "client", widget: "string", required: false }
+              - { label: "Role", name: "role", widget: "string", required: false }
+              - { label: "Year", name: "year", widget: "string", required: false }
+
+  - name: "settings"
+    label: "Site Settings"
+    description: "Site-wide settings like the founder's photo."
+    files:
+      - file: "content/settings.json"
+        label: "General Settings"
+        name: "settings"
+        fields:
+          - label: "Founder Photo"
+            name: "founder_photo"
+            widget: "image"
+            required: false
+            hint: "Shown in the About section. Recommended: 480x600px portrait."
